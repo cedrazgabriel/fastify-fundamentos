@@ -16,20 +16,34 @@ type Request = FastifyRequest<{
         id: string
     }
 }>
+
 //Forma mais utilizada para declarar rotas no fastify
-fastify.get("/", async (request: Request) => {
+fastify.post("/", async (request: Request, reply) => {
     const {
         body,
         headers,
         query,
         params
     } = request // conseguimos pegar os dados da requisição
-    return {
-        params,
-        query,
-        body,
-        headers
+
+    reply.header("x-custom", "my-custom-header")
+
+    if (!body.name) {
+        reply.code(400)
+            .send({
+                message: "Name is required"
+            })
+        return
     }
+
+    reply.code(201)
+        .send({
+            params,
+            query,
+            body,
+            headers
+        })
+
 })
 
 //Outra forma de declarar rotas no fastify
