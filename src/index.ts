@@ -1,4 +1,5 @@
 import Fastify, { FastifyRequest } from "fastify";
+import { randomUUID } from "node:crypto";
 
 const fastify = Fastify()
 
@@ -14,6 +15,10 @@ type Request = FastifyRequest<{
     },
     Params: {
         id: string
+    },
+    Reply: {
+        201: { id: string },
+        '4xx': { code: string, message: string }
     }
 }>
 
@@ -21,9 +26,6 @@ type Request = FastifyRequest<{
 fastify.post("/", async (request: Request, reply) => {
     const {
         body,
-        headers,
-        query,
-        params
     } = request // conseguimos pegar os dados da requisição
 
     reply.header("x-custom", "my-custom-header")
@@ -31,6 +33,7 @@ fastify.post("/", async (request: Request, reply) => {
     if (!body.name) {
         reply.code(400)
             .send({
+                code: 'VALIDATION_ERROR',
                 message: "Name is required"
             })
         return
@@ -38,10 +41,7 @@ fastify.post("/", async (request: Request, reply) => {
 
     reply.code(201)
         .send({
-            params,
-            query,
-            body,
-            headers
+            id: randomUUID()
         })
 
 })
