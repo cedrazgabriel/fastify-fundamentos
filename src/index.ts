@@ -1,9 +1,23 @@
-import Fastify from "fastify";
+import Fastify, { FastifyRequest } from "fastify";
 
 const fastify = Fastify()
 
+type Request = FastifyRequest<{
+    Body: {
+        name: string
+    },
+    Headers: {
+        myCustomHeader: string
+    },
+    Querystring: {
+        page: string,
+    },
+    Params: {
+        id: string
+    }
+}>
 //Forma mais utilizada para declarar rotas no fastify
-fastify.get("/", async (request) => {
+fastify.get("/", async (request: Request) => {
     const {
         body,
         headers,
